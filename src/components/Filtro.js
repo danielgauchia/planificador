@@ -16,6 +16,7 @@ const Filtro = ({filtro, setFiltro, gastos, setGastosFiltrados}) => {
     }, [filtro, gastos])
 
     return (
+        
         <View style={styles.contenedor}>
             <Text style={styles.label}>Filtrar Gastos</Text>
 
