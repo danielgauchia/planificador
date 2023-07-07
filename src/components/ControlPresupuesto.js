@@ -5,13 +5,13 @@ import {formatearCantidad } from '../helpers'
 import CircularProgress from 'react-native-circular-progress-indicator'
 
 
-const ControlPresupuesto = ({presupuesto, gastos, resetearApp}) => {
+const ControlPresupuesto = ({presupuesto, resetearApp, gastosMes, resetearPresupuesto}) => {
     const [disponible, setDisponible] = useState(0)
     const [gastado, setGastado] = useState(0)
     const [porcentaje, setPorcentaje ] = useState(0)
 
     useEffect(() => {
-        const totalGastado = gastos.reduce( (total, gasto) => Number(gasto.cantidad) + total, 0 )
+        const totalGastado = gastosMes.reduce( (total, gasto) => Number(gasto.cantidad) + total, 0 )
 
         const totalDisponible = presupuesto - totalGastado
 
@@ -25,7 +25,7 @@ const ControlPresupuesto = ({presupuesto, gastos, resetearApp}) => {
         }, 1000);
         setGastado(totalGastado)
         setDisponible(totalDisponible)
-    }, [gastos])
+    }, [gastosMes])
 
     return (
         <View style={styles.contenedor}>
@@ -47,10 +47,17 @@ const ControlPresupuesto = ({presupuesto, gastos, resetearApp}) => {
 
             <View style={styles.contenedorTexto}>
                 <Pressable
+                    onLongPress={resetearPresupuesto}
+                    style={styles.botonResetearPresupuesto}
+                >
+                    <Text style={styles.textoBoton}>Cambiar Presupuesto Mensual</Text>
+                </Pressable>
+
+                <Pressable
                     onLongPress={resetearApp}
                     style={styles.boton}
                 >
-                    <Text style={styles.textoBoton}>Reiniciar App</Text>
+                    <Text style={styles.textoBoton}>Borrar todos los datos</Text>
                 </Pressable>
 
                 <Text style={styles.valor}>
@@ -79,6 +86,12 @@ const styles = StyleSheet.create({
     centrarGrafica: {
         alignItems: 'center'
     }, 
+    botonResetearPresupuesto: {
+        backgroundColor: '#3327db',
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 5
+    },
     boton: {
         backgroundColor: '#DB2777',
         padding: 10,
