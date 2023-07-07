@@ -24,8 +24,12 @@ const App = () => {
   const [gastosMes, setGastosMes] = useState([]);
   const [modal, setModal] = useState(false);
   const [gasto, setGasto] = useState({});
-  const [filtroFecha, setFiltroFecha] = useState(new Date());
+  const [filtro, setFiltro] = useState({
+    filtroFecha: new Date(),
+		filtroCategoria: '',
+  })
   const [gastosFiltrados, setGastosFiltrados] = useState([]);
+  const [gastosFiltradosCateg, setGastosFiltradosCateg] = useState([]);
 
   useEffect(() => {
     const obtenerPresupuestoStorage = async () => {
@@ -224,19 +228,22 @@ const App = () => {
           <>
             
             <FiltroFecha
-              filtroFecha={filtroFecha}
-              setFiltroFecha={setFiltroFecha}
+              filtro={filtro}
+              setFiltro={setFiltro}
               gastos={gastos}
+              gastosFiltrados={gastosFiltrados}
               setGastosFiltrados={setGastosFiltrados}
+              setGastosFiltradosCateg={setGastosFiltradosCateg}
             />
 
 
             <ListadoGastos
+              filtro={filtro}
               gastos={gastos}
               setModal={setModal}
               setGasto={setGasto}
-              filtroFecha={filtroFecha}
               gastosFiltrados={gastosFiltrados}
+              gastosFiltradosCateg={gastosFiltradosCateg}
             />
           </>
         )}
