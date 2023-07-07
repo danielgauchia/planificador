@@ -11,7 +11,6 @@ const FiltroFecha = ({
   gastosFiltrados,
   setGastosFiltrados,
   setGastosFiltradosCateg,
-  
 }) => {
   useEffect(() => {
     const filterGastosByFecha = () => {
@@ -46,7 +45,7 @@ const FiltroFecha = ({
 
   return (
     <>
-      <View style={styles.contenedor}>
+      <View style={styles.contenedorUno}>
         <Text style={styles.label}>Filtrar Mes/Año</Text>
 
         <DatePicker
@@ -58,8 +57,8 @@ const FiltroFecha = ({
         />
       </View>
 
-      <View style={styles.contenedor}>
-        <Text style={styles.label}>Filtrar Gastos</Text>
+      <View style={styles.contenedorDos}>
+        <Text style={styles.label}>Filtrar Categoría</Text>
 
         <Picker
           selectedValue={filtro.filtroCategoria}
@@ -82,10 +81,15 @@ const FiltroFecha = ({
 };
 
 const styles = StyleSheet.create({
-  contenedor: {
+  contenedorUno: {
     ...globalStyles.contenedor,
     transform: [{translateY: 0}],
     marginTop: 80,
+  },
+  contenedorDos: {
+    ...globalStyles.contenedor,
+    transform: [{translateY: 0}],
+    marginTop: 30,
   },
   label: {
     fontSize: 22,
