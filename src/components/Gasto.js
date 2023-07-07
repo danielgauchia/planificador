@@ -48,7 +48,9 @@ const Gasto = ({gasto, setModal, setGasto }) => {
 const styles = StyleSheet.create({
     contenedor: {
       ...globalStyles.contenedor,
-      marginBottom: 20
+        marginBottom: 20,
+        transform: [{ translateY: 0 }],
+        
     },
     contenido: {
         flexDirection: 'row',
