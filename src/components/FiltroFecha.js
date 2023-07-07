@@ -54,6 +54,22 @@ const FiltroFecha = ({
           locale="es"
           textColor="#000000"
           mode="date"
+          maximumDate={gastos.lenght >0 ?
+            (
+              new Date(Math.max(...gastos.map(gasto => new Date(gasto.fecha).getTime())))
+            ) : (
+              new Date(Date.now())
+            )
+            
+          }
+          minimumDate={gastos.lenght >0 ?
+            (
+              new Date(Math.min(...gastos.map(gasto => new Date(gasto.fecha).getTime())))
+            ) : (
+              new Date(Date.now())
+            )
+            
+          }
         />
       </View>
 

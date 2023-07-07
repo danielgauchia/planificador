@@ -89,21 +89,15 @@ const App = () => {
   }, [gastos]);
 
   useEffect(() => {
-    const latestYear = Math.max(
-      ...gastos.map(gasto => new Date(gasto.fecha).getFullYear()),
-    );
-    const latestMonth = Math.max(
-      ...gastos.map(gasto => new Date(gasto.fecha).getMonth()),
-    );
-
-    const filteredGastos = gastos.filter(gasto => {
-      const gastoYear = new Date(gasto.fecha).getFullYear();
-      const gastoMonth = new Date(gasto.fecha).getMonth();
-      return gastoYear === latestYear && gastoMonth === latestMonth;
-    });
-
+    const latestYear = Math.max(...gastos.map(gasto => new Date(gasto.fecha).getFullYear()));
+    const latestGastosOfYear = gastos.filter(gasto => new Date(gasto.fecha).getFullYear() === latestYear);
+    const latestMonth = Math.max(...latestGastosOfYear.map(gasto => new Date(gasto.fecha).getMonth()));
+  
+    const filteredGastos = latestGastosOfYear.filter(gasto => new Date(gasto.fecha).getMonth() === latestMonth);
+  
     setGastosMes(filteredGastos);
   }, [gastos]);
+  
 
   const handleNuevoPresupuesto = presupuesto => {
     if (Number(presupuesto) > 0) {
