@@ -18,6 +18,7 @@ import {generarId} from './src/helpers';
 import FiltroFecha from './src/components/FiltroFecha';
 
 const App = () => {
+  const fechaActual = new Date()
   const [isValidPresupuesto, setIsValidPresupuesto] = useState(false);
   const [presupuesto, setPresupuesto] = useState('');
   const [gastos, setGastos] = useState([]);
@@ -25,9 +26,10 @@ const App = () => {
   const [modal, setModal] = useState(false);
   const [gasto, setGasto] = useState({});
   const [filtro, setFiltro] = useState({
-    filtroFecha: new Date(),
-		filtroCategoria: '',
-  })
+    filtroFechaMonth: fechaActual.getMonth(),
+    filtroFechaYear: fechaActual.getFullYear(),
+    filtroCategoria: '',
+  });
   const [gastosFiltrados, setGastosFiltrados] = useState([]);
   const [gastosFiltradosCateg, setGastosFiltradosCateg] = useState([]);
 
@@ -89,15 +91,22 @@ const App = () => {
   }, [gastos]);
 
   useEffect(() => {
-    const latestYear = Math.max(...gastos.map(gasto => new Date(gasto.fecha).getFullYear()));
-    const latestGastosOfYear = gastos.filter(gasto => new Date(gasto.fecha).getFullYear() === latestYear);
-    const latestMonth = Math.max(...latestGastosOfYear.map(gasto => new Date(gasto.fecha).getMonth()));
-  
-    const filteredGastos = latestGastosOfYear.filter(gasto => new Date(gasto.fecha).getMonth() === latestMonth);
-  
+    const latestYear = Math.max(
+      ...gastos.map(gasto => new Date(gasto.fecha).getFullYear()),
+    );
+    const latestGastosOfYear = gastos.filter(
+      gasto => new Date(gasto.fecha).getFullYear() === latestYear,
+    );
+    const latestMonth = Math.max(
+      ...latestGastosOfYear.map(gasto => new Date(gasto.fecha).getMonth()),
+    );
+
+    const filteredGastos = latestGastosOfYear.filter(
+      gasto => new Date(gasto.fecha).getMonth() === latestMonth,
+    );
+
     setGastosMes(filteredGastos);
   }, [gastos]);
-  
 
   const handleNuevoPresupuesto = presupuesto => {
     if (Number(presupuesto) > 0) {
@@ -220,7 +229,6 @@ const App = () => {
 
         {isValidPresupuesto && (
           <>
-            
             <FiltroFecha
               filtro={filtro}
               setFiltro={setFiltro}
@@ -229,7 +237,6 @@ const App = () => {
               setGastosFiltrados={setGastosFiltrados}
               setGastosFiltradosCateg={setGastosFiltradosCateg}
             />
-
 
             <ListadoGastos
               filtro={filtro}

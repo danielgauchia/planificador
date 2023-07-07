@@ -1,9 +1,8 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import globalStyles from '../styles';
-import DatePicker from 'react-native-date-picker';
 import {Picker} from '@react-native-picker/picker';
-
+import {Picker as WheelPicker} from 'react-native-wheel-pick';
 const FiltroFecha = ({
   filtro,
   setFiltro,
@@ -12,13 +11,44 @@ const FiltroFecha = ({
   setGastosFiltrados,
   setGastosFiltradosCateg,
 }) => {
+  const yearActual = new Date().getFullYear()
+  const [minYear, setMinYear] = useState(yearActual);
+  const [maxYear, setMaxYear] = useState(yearActual);
+  const [yearPickerData, setYearPickerData] = useState([]);
+
+  useEffect(() => {
+    const calculateMinMaxYear = () => {
+      if (gastos.length > 0) {
+        const years = gastos.map(gasto => new Date(gasto.fecha).getFullYear());
+        setMinYear(Math.min(...years));
+        setMaxYear(Math.max(...years));
+      }
+    };
+
+    calculateMinMaxYear();
+  }, [gastos]);
+
+  useEffect(() => {
+    const generateYearPickerData = () => {
+      const data = [];
+      if (minYear !== null && maxYear !== null) {
+        for (let year = minYear; year <= maxYear; year++) {
+          data.push({value: year, label: year.toString()});
+        }
+      }
+      setYearPickerData(data);
+    };
+
+    generateYearPickerData();
+  }, [minYear, maxYear]);
+
   useEffect(() => {
     const filterGastosByFecha = () => {
       const gastosFiltradosFecha = gastos.filter(gasto => {
         const gastoYear = new Date(gasto.fecha).getFullYear();
         const gastoMonth = new Date(gasto.fecha).getMonth();
-        const gastoYearNuevo = filtro.filtroFecha.getFullYear();
-        const gastoMonthNuevo = filtro.filtroFecha.getMonth();
+        const gastoYearNuevo = filtro.filtroFechaYear;
+        const gastoMonthNuevo = filtro.filtroFechaMonth;
         return gastoYear === gastoYearNuevo && gastoMonth === gastoMonthNuevo;
       });
 
@@ -26,7 +56,7 @@ const FiltroFecha = ({
     };
 
     filterGastosByFecha();
-  }, [filtro.filtroFecha, gastos]);
+  }, [filtro.filtroFechaYear, filtro.filtroFechaMonth, gastos]);
 
   useEffect(() => {
     const filterGastosByCategoria = () => {
@@ -48,29 +78,38 @@ const FiltroFecha = ({
       <View style={styles.contenedorUno}>
         <Text style={styles.label}>Filtrar Mes/Año</Text>
 
-        <DatePicker
-          date={filtro.filtroFecha}
-          onDateChange={date => setFiltro({...filtro, filtroFecha: date})}
-          locale="es"
-          textColor="#000000"
-          mode="date"
-          maximumDate={gastos.lenght >0 ?
-            (
-              new Date(Math.max(...gastos.map(gasto => new Date(gasto.fecha).getTime())))
-            ) : (
-              new Date(Date.now())
-            )
-            
-          }
-          minimumDate={gastos.lenght >0 ?
-            (
-              new Date(Math.min(...gastos.map(gasto => new Date(gasto.fecha).getTime())))
-            ) : (
-              new Date(Date.now())
-            )
-            
-          }
-        />
+        <View style={styles.contenedorFiltro}>
+          <WheelPicker
+            style={{backgroundColor: 'white', width: 150, color: 'black'}}
+            selectedValue={filtro.filtroFechaMonth}
+            pickerData={[
+              {value: 0, label: 'Enero'},
+              {value: 1, label: 'Febrero'},
+              {value: 2, label: 'Marzo'},
+              {value: 3, label: 'Abril'},
+              {value: 4, label: 'Mayo'},
+              {value: 5, label: 'Junio'},
+              {value: 6, label: 'Julio'},
+              {value: 7, label: 'Agosto'},
+              {value: 8, label: 'Septiembre'},
+              {value: 9, label: 'Octubre'},
+              {value: 10, label: 'Noviembre'},
+              {value: 11, label: 'Diciembre'},
+            ]}
+            onValueChange={value => {
+              setFiltro({...filtro, filtroFechaMonth: value});
+            }}
+          />
+
+          <WheelPicker
+            style={{backgroundColor: 'white', width: 150, color: 'black'}}
+            selectedValue={filtro.filtroFechaYear}
+            pickerData={yearPickerData}
+            onValueChange={value => {
+              setFiltro({...filtro, filtroFechaYear: value});
+            }}
+          />
+        </View>
       </View>
 
       <View style={styles.contenedorDos}>
@@ -101,6 +140,11 @@ const styles = StyleSheet.create({
     ...globalStyles.contenedor,
     transform: [{translateY: 0}],
     marginTop: 80,
+  },
+  contenedorFiltro: {
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   contenedorDos: {
     ...globalStyles.contenedor,
