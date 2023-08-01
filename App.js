@@ -16,7 +16,7 @@ import FormularioGasto from './src/components/FormularioGasto';
 import ListadoGastos from './src/components/ListadoGastos';
 import {generarId} from './src/helpers';
 import FiltroFecha from './src/components/FiltroFecha';
-
+//Planificador de Gastos mensuales
 const App = () => {
   const fechaActual = new Date()
   const [isValidPresupuesto, setIsValidPresupuesto] = useState(false);
