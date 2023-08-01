@@ -11,7 +11,7 @@ const FiltroFecha = ({
   setGastosFiltrados,
   setGastosFiltradosCateg,
 }) => {
-  const yearActual = new Date().getFullYear()
+  const yearActual = new Date().getFullYear();
   const [minYear, setMinYear] = useState(yearActual);
   const [maxYear, setMaxYear] = useState(yearActual);
   const [yearPickerData, setYearPickerData] = useState([]);
@@ -76,11 +76,19 @@ const FiltroFecha = ({
   return (
     <>
       <View style={styles.contenedorUno}>
-        <Text style={styles.label}>Filtrar Mes/Año</Text>
+        {yearPickerData.length > 1 ? (
+          <Text style={styles.label}>Filtrar Mes/Año</Text>
+        ) : (
+          <Text style={styles.label}>Filtrar Mes</Text>
+        )}
 
         <View style={styles.contenedorFiltro}>
           <WheelPicker
-            style={{backgroundColor: 'white', width: 150, color: 'black'}}
+            style={{
+              backgroundColor: 'white',
+              width: yearPickerData.length > 1 ? 150 : '100%',
+              color: 'black',
+            }}
             selectedValue={filtro.filtroFechaMonth}
             pickerData={[
               {value: 0, label: 'Enero'},
@@ -100,15 +108,16 @@ const FiltroFecha = ({
               setFiltro({...filtro, filtroFechaMonth: value});
             }}
           />
-
-          <WheelPicker
-            style={{backgroundColor: 'white', width: 150, color: 'black'}}
-            selectedValue={filtro.filtroFechaYear}
-            pickerData={yearPickerData}
-            onValueChange={value => {
-              setFiltro({...filtro, filtroFechaYear: value});
-            }}
-          />
+          {yearPickerData.length > 1 && (
+            <WheelPicker
+              style={{backgroundColor: 'white', width: 150, color: 'black'}}
+              selectedValue={filtro.filtroFechaYear}
+              pickerData={yearPickerData}
+              onValueChange={value => {
+                setFiltro({...filtro, filtroFechaYear: value});
+              }}
+            />
+          )}
         </View>
       </View>
 

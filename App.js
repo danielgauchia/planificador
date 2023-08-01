@@ -97,12 +97,9 @@ const App = () => {
     const latestGastosOfYear = gastos.filter(
       gasto => new Date(gasto.fecha).getFullYear() === latestYear,
     );
-    const latestMonth = Math.max(
-      ...latestGastosOfYear.map(gasto => new Date(gasto.fecha).getMonth()),
-    );
 
     const filteredGastos = latestGastosOfYear.filter(
-      gasto => new Date(gasto.fecha).getMonth() === latestMonth,
+      gasto => new Date(gasto.fecha).getMonth() === fechaActual.getMonth(),
     );
 
     setGastosMes(filteredGastos);
