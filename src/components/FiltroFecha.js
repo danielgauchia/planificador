@@ -11,36 +11,31 @@ const FiltroFecha = ({
   setGastosFiltrados,
   setGastosFiltradosCateg,
 }) => {
-  const yearActual = new Date().getFullYear();
-  const [minYear, setMinYear] = useState(yearActual);
-  const [maxYear, setMaxYear] = useState(yearActual);
   const [yearPickerData, setYearPickerData] = useState([]);
-
-  useEffect(() => {
-    const calculateMinMaxYear = () => {
-      if (gastos.length > 0) {
-        const years = gastos.map(gasto => new Date(gasto.fecha).getFullYear());
-        setMinYear(Math.min(...years));
-        setMaxYear(Math.max(...years));
-      }
-    };
-
-    calculateMinMaxYear();
-  }, [gastos]);
-
   useEffect(() => {
     const generateYearPickerData = () => {
-      const data = [];
-      if (minYear !== null && maxYear !== null) {
-        for (let year = minYear; year <= maxYear; year++) {
-          data.push({value: year, label: year.toString()});
-        }
-      }
-      setYearPickerData(data);
+      const data = new Set(); // Using Set to ensure unique years
+
+      // Add years from the "gastos" array
+      gastos.forEach(gasto => {
+        const gastoYear = new Date(gasto.fecha).getFullYear();
+        data.add(gastoYear);
+      });
+
+      // Convert Set back to array and sort the years in ascending order
+      const sortedData = [...data].sort((a, b) => a - b);
+
+      // Create the final yearPickerData array
+      const yearPickerData = sortedData.map(year => ({
+        value: year,
+        label: year.toString(),
+      }));
+
+      setYearPickerData(yearPickerData);
     };
 
     generateYearPickerData();
-  }, [minYear, maxYear]);
+  }, [gastos]);
 
   useEffect(() => {
     const filterGastosByFecha = () => {

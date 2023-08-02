@@ -91,18 +91,17 @@ const App = () => {
   }, [gastos]);
 
   useEffect(() => {
-    const latestYear = Math.max(
-      ...gastos.map(gasto => new Date(gasto.fecha).getFullYear()),
-    );
+    
     const latestGastosOfYear = gastos.filter(
-      gasto => new Date(gasto.fecha).getFullYear() === latestYear,
+      gasto => new Date(gasto.fecha).getFullYear() === fechaActual.getFullYear(),
     );
-
-    const filteredGastos = latestGastosOfYear.filter(
-      gasto => new Date(gasto.fecha).getMonth() === fechaActual.getMonth(),
-    );
-
-    setGastosMes(filteredGastos);
+    if (latestGastosOfYear.length > 0) {
+      const filteredGastos = latestGastosOfYear.filter(
+        gasto => new Date(gasto.fecha).getMonth() === fechaActual.getMonth(),
+      );
+  
+      setGastosMes(filteredGastos);
+    }
   }, [gastos]);
 
   const handleNuevoPresupuesto = presupuesto => {
@@ -149,6 +148,7 @@ const App = () => {
             setGastos(gastosActualizados);
             setModal(!modal);
             setGasto({});
+            setFiltro({...filtro, filtroFechaYear: fechaActual.getFullYear()})
           },
         },
       ],
@@ -166,10 +166,10 @@ const App = () => {
           onPress: async () => {
             try {
               await AsyncStorage.clear();
-
               setIsValidPresupuesto(false);
               setPresupuesto('');
               setGastos([]);
+              setFiltro({})
             } catch (error) {
               console.log(error);
             }
