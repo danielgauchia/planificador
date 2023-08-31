@@ -11,15 +11,15 @@ const ControlPresupuesto = ({presupuesto, resetearApp, gastosMes, resetearPresup
     const [porcentaje, setPorcentaje ] = useState(0)
 
     useEffect(() => {
-        const totalGastado = gastosMes.reduce( (total, gasto) => Number(gasto.cantidad) + total, 0 )
+        let totalGastado = gastosMes.reduce( (total, gasto) => Number(gasto.cantidad) + total, 0 )
 
         const totalDisponible = presupuesto - totalGastado
-
+        totalGastado = Math.max(totalGastado, 0)
         const nuevoPorcentaje = (
             ((presupuesto - totalDisponible) / presupuesto) * 100
         )
 
-      
+        
         setTimeout(() => {
             setPorcentaje(nuevoPorcentaje)
         }, 1000);

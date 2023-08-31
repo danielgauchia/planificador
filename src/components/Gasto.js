@@ -4,7 +4,7 @@ import globalStyles from '../styles'
 import { formatearCantidad, formatearFecha } from '../helpers'
 
 const diccionarioIconos = {
-    ahorro: require('../img/icono_ahorro.png'),
+    ingreso: require('../img/icono_ahorro.png'),
     comida: require('../img/icono_comida.png'),
     casa: require('../img/icono_casa.png'),
     gastos: require('../img/icono_gastos.png'),

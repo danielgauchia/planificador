@@ -7,6 +7,8 @@ import {
   Pressable,
   Image,
   Modal,
+  Keyboard,
+  TouchableWithoutFeedback
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from './src/components/Header';
@@ -18,7 +20,10 @@ import {generarId} from './src/helpers';
 import FiltroFecha from './src/components/FiltroFecha';
 //Planificador de Gastos mensuales
 const App = () => {
-  const fechaActual = new Date()
+  const ocultarTeclado = () => {
+    Keyboard.dismiss();
+  };
+  const fechaActual = new Date();
   const [isValidPresupuesto, setIsValidPresupuesto] = useState(false);
   const [presupuesto, setPresupuesto] = useState('');
   const [gastos, setGastos] = useState([]);
@@ -91,15 +96,15 @@ const App = () => {
   }, [gastos]);
 
   useEffect(() => {
-    
     const latestGastosOfYear = gastos.filter(
-      gasto => new Date(gasto.fecha).getFullYear() === fechaActual.getFullYear(),
+      gasto =>
+        new Date(gasto.fecha).getFullYear() === fechaActual.getFullYear(),
     );
     if (latestGastosOfYear.length > 0) {
       const filteredGastos = latestGastosOfYear.filter(
         gasto => new Date(gasto.fecha).getMonth() === fechaActual.getMonth(),
       );
-  
+
       setGastosMes(filteredGastos);
     }
   }, [gastos]);
@@ -119,14 +124,21 @@ const App = () => {
     }
 
     if (gasto.id) {
-      const gastosActualizados = gastos.map(gastoState =>
-        gastoState.id === gasto.id ? gasto : gastoState,
-      );
+      const gastosActualizados = gastos.map(gastoState => {
+        if (gastoState.id === gasto.id && gasto.categoria === 'ingreso') {
+          gasto.cantidad *= -1;
+        }
+        return gastoState.id === gasto.id ? gasto : gastoState;
+      });
       setGastos(gastosActualizados);
     } else {
       // Añadir el nuevo gasto al state
+      if (gasto.categoria === 'ingreso') {
+        gasto.cantidad *= -1;
+      }
       gasto.id = generarId();
       gasto.fecha = Date.now();
+
       setGastos([...gastos, gasto]);
     }
     setModal(!modal);
@@ -148,7 +160,7 @@ const App = () => {
             setGastos(gastosActualizados);
             setModal(!modal);
             setGasto({});
-            setFiltro({...filtro, filtroFechaYear: fechaActual.getFullYear()})
+            setFiltro({...filtro, filtroFechaYear: fechaActual.getFullYear()});
           },
         },
       ],
@@ -169,7 +181,9 @@ const App = () => {
               setIsValidPresupuesto(false);
               setPresupuesto('');
               setGastos([]);
-              setFiltro({})
+              setGastosFiltrados([]);
+              setGastosFiltradosCateg([]);
+              setGastosMes([]);
             } catch (error) {
               console.log(error);
             }
@@ -203,76 +217,78 @@ const App = () => {
   };
 
   return (
-    <View style={styles.contenedor}>
-      <ScrollView>
-        <View style={styles.header}>
-          <Header />
+    
+      <View style={styles.contenedor}>
+        <ScrollView>
+          <View style={styles.header}>
+            <Header />
 
-          {isValidPresupuesto ? (
-            <ControlPresupuesto
-              presupuesto={presupuesto}
-              gastosMes={gastosMes}
-              resetearApp={resetearApp}
-              resetearPresupuesto={resetearPresupuesto}
-            />
-          ) : (
-            <NuevoPresupuesto
-              presupuesto={presupuesto}
-              setPresupuesto={setPresupuesto}
-              handleNuevoPresupuesto={handleNuevoPresupuesto}
-            />
+            {isValidPresupuesto ? (
+              <ControlPresupuesto
+                presupuesto={presupuesto}
+                gastosMes={gastosMes}
+                resetearApp={resetearApp}
+                resetearPresupuesto={resetearPresupuesto}
+              />
+            ) : (
+              <NuevoPresupuesto
+                presupuesto={presupuesto}
+                setPresupuesto={setPresupuesto}
+                handleNuevoPresupuesto={handleNuevoPresupuesto}
+              />
+            )}
+          </View>
+
+          {isValidPresupuesto && (
+            <>
+              <FiltroFecha
+                filtro={filtro}
+                setFiltro={setFiltro}
+                gastos={gastos}
+                gastosFiltrados={gastosFiltrados}
+                setGastosFiltrados={setGastosFiltrados}
+                setGastosFiltradosCateg={setGastosFiltradosCateg}
+              />
+
+              <ListadoGastos
+                filtro={filtro}
+                gastos={gastos}
+                setModal={setModal}
+                setGasto={setGasto}
+                gastosFiltrados={gastosFiltrados}
+                gastosFiltradosCateg={gastosFiltradosCateg}
+              />
+            </>
           )}
-        </View>
+        </ScrollView>
+
+        {modal && (
+          <Modal
+            animationType="slide"
+            visible={modal}
+            onRequestClose={() => {
+              setModal(!modal);
+            }}>
+            <FormularioGasto
+              setModal={setModal}
+              handleGasto={handleGasto}
+              gasto={gasto}
+              setGasto={setGasto}
+              eliminarGasto={eliminarGasto}
+            />
+          </Modal>
+        )}
 
         {isValidPresupuesto && (
-          <>
-            <FiltroFecha
-              filtro={filtro}
-              setFiltro={setFiltro}
-              gastos={gastos}
-              gastosFiltrados={gastosFiltrados}
-              setGastosFiltrados={setGastosFiltrados}
-              setGastosFiltradosCateg={setGastosFiltradosCateg}
+          <Pressable style={styles.pressable} onPress={() => setModal(!modal)}>
+            <Image
+              style={styles.imagen}
+              source={require('./src/img/nuevo-gasto.png')}
             />
-
-            <ListadoGastos
-              filtro={filtro}
-              gastos={gastos}
-              setModal={setModal}
-              setGasto={setGasto}
-              gastosFiltrados={gastosFiltrados}
-              gastosFiltradosCateg={gastosFiltradosCateg}
-            />
-          </>
+          </Pressable>
         )}
-      </ScrollView>
-
-      {modal && (
-        <Modal
-          animationType="slide"
-          visible={modal}
-          onRequestClose={() => {
-            setModal(!modal);
-          }}>
-          <FormularioGasto
-            setModal={setModal}
-            handleGasto={handleGasto}
-            gasto={gasto}
-            setGasto={setGasto}
-            eliminarGasto={eliminarGasto}
-          />
-        </Modal>
-      )}
-
-      {isValidPresupuesto && (
-        <Pressable style={styles.pressable} onPress={() => setModal(!modal)}>
-          <Image
-            style={styles.imagen}
-            source={require('./src/img/nuevo-gasto.png')}
-          />
-        </Pressable>
-      )}
-    </View>
+      </View>
+    
   );
 };
 

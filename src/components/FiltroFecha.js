@@ -126,7 +126,7 @@ const FiltroFecha = ({
           }
           style={styles.picker}>
           <Picker.Item label="-- Clica para Seleccionar --" value="" />
-          <Picker.Item label="Ahorro" value="ahorro" />
+          <Picker.Item label="Ingreso" value="ingreso" />
           <Picker.Item label="Comida" value="comida" />
           <Picker.Item label="Casa" value="casa" />
           <Picker.Item label="Gastos Varios" value="gastos" />
